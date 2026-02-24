@@ -2,15 +2,13 @@
 
 ## **1\. Overview**
 
-Accurate cell type annotation is the cornerstone of single-cell RNA sequencing (scRNA-seq) data analysis. Yet, it faces severe challenges from high data dimensionality, sparsity, and batch effects. Current discriminative models struggle to capture the intrinsic manifold structure of the data. At the same time, generative models like diffusion models can learn data features precisely, but their use in biology is currently limited mostly to data augmentation.
+The scDiTA framework aims to transfer the representational power of generative models to discriminative tasks. To address the high dimensionality and sparsity of scRNA-seq data, we first project raw gene expression profiles into a compact continuous latent space using Principal Component Analysis (PCA). Based on these latent variables, we train a Diffusion Transformer (DiT) using Optimal Transport Flow Matching. This process forces the model to fit the original data distribution, learning the probability flow of cells in the latent space and the complex non-linear dependencies between gene programs.
 
-To bridge this gap, we propose scDiTA. This is an adaptive representation learning framework based on a pre-trained Diffusion Transformer (DiT). It essentially turns the DiT from a generator into a highly efficient feature extractor. In practice, scDiTA fits the cellular topology using a DiT architecture combined with OT-FM. It adaptively fuses multi-layer features through a Learnable Scalar Mixing mechanism. We also use LoRA technology for efficient downstream adaptation. Based on the unique traits of gene expression data, we designed a specific strategy using a fixed large time step and null classifier guidance (Null-CFG). This forces the model into a "deep denoising" state, allowing it to extract robust biological features.
-
-Extensive benchmarking shows that scDiTA significantly outperforms SOTA methods like scRGCL in both accuracy and F1 scores across datasets such as Pancreas, Lung, and Colon. It maintains strong robustness even in extreme scenarios with 50% noise interference or just 10% training samples. Moreover, scDiTA displays excellent out-of-distribution (OOD) detection for unknown cell types. It effectively avoids misclassification by lowering its prediction confidence. The framework is also highly scalable, standing as a solid architecture rather than a mere pile of tricks. Ultimately, scDiTA establishes a new paradigm for single-cell representation learning. It proves that a well-trained generative model is inherently the optimal biological feature extractor.
+Once trained, we freeze the DiT weights and use the model as a feature extractor. We input clean latent variables, inject a fixed time step parameter t, and set the classifier guidance to null (Null CFG) for inference. Simultaneously, we introduce a DiT-based feature optimization strategy. This identifies and suppresses massive activations induced by AdaLN that concentrate in specific dimensions, stripping away non-semantic signals related to the generation process. The extracted multi-layer features are adaptively fused via a learnable Scalar Mixing strategy. Finally, they pass through a Low-Rank Adaptation (LoRA) module for lightweight fine-tuning and enter a Multi-Layer Perceptron (MLP) classifier for final cell type annotation.
 
 ## **2\. Environment Setup**
 
-Please run the following commands in your terminal:
+If you want to reproduce this project, please first configure the required environment. Run the following commands in your terminal:
 
 ```bash
 conda create -n scDiTA python=3.8.20 -y  
@@ -19,36 +17,45 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvi
 pip install -r requirements.txt
 ```
 
-## **3\. Demo (Pancreas Dataset)**
+## **3\. Demo**
 
-We provide a demo using the Pancreas dataset. We have completed all the preliminary preprocessing, clustering, and PCA dimensionality reduction. The training data is located in dataset/Pancreas and the test data is in test/Pancreas.
+We provide a demo using the Pancreas dataset. We have completed all the preliminary preprocessing, clustering, and PCA dimensionality reduction. The training data is located in `dataset/Pancreas` and the test data is in `test/Pancreas`.
 
-*(Note: All these files can be generated from the preprocessed .h5ad files using the code blocks provided in pre.ipynb)*
+All these files can be generated from the preprocessed `.h5ad` files using the code blocks provided in `pre.ipynb`
 
 To run the demo, please execute the following steps in order:
 
-**Step 1: Extract Features** Load our provided Pancreas DiT weights (DiT/Pancreas/Pancreas.pt) to extract features for both the training and test sets.
+**Step 1: Features Extracting** Load our provided Pancreas DiT weights `DiT/Pancreas/Pancreas.pt` to extract features for both the training and test sets.
 
+```bash
 python extract.py train  
 python extract.py test
+```
 
-**Step 2: Train the Classifier** Use the extracted training features to train the classifier. You can select your own random seed (e.g., 0).
+**Step 2: Classifier Training** Use the extracted training features to train the classifier. You can select your own random seed.
 
+```bash
 python classifier\_train.py 0
+```
 
 **Step 3: Cell Type Annotation** Load the classifier weights obtained in the previous step to annotate the test set features and generate the final results.
 
+```bash
 python annotation.py 0
+```
 
-**Performance Tip**: If you are running this with a GPU, the entire process takes less than 10 minutes.
+If you are running this with a GPU, the entire process takes less than 10 minutes.
 
 ## **4\. Running with Custom Data**
 
 If you want to run scDiTA on your own scRNA-seq datasets, please follow these steps:
 
-1. **Preprocessing**: Preprocess your data (e.g., log-normalization) according to the methods described in our paper. You can use dataset/Pancreas/Pancreas.h5ad as a standard reference template.  
-2. **Clustering & PCA**: Follow the instructions and code blocks in pre.ipynb to perform clustering and PCA dimensionality reduction on your specific training and test sets.  
-3. **Train DiT**: Run the following command to train the DiT model from scratch using your preprocessed data.  
-   python DiT\_train.py
+1. **Preprocessing**: Preprocess your data (including log-normalization and the selection of the top 2000 highly variable genes). `dataset/Pancreas/Pancreas.h5ad` can be a standard reference template.  
+2. **Clustering & PCA**: Follow the instructions and code blocks in `pre.ipynb` to perform clustering and PCA dimensionality reduction on your specific training and test sets.  
+3. **Train DiT**: Run the following command to train the DiT model from scratch using your preprocessed data.
 
-4. **Downstream Tasks**: Once the DiT training is complete, follow the exact same steps detailed in the **Demo** section (extract.py \-\> classifier\_train.py \-\> annotation.py) to extract features, train your classifier, and run the annotations.
+   ```bash
+   python DiT\_train.py
+   ```
+   
+4. **Downstream Tasks**: Once the DiT training is complete, follow the exact same steps detailed in the **Demo** section (`extract.py` \-\> `classifier\_train.py` \-\> `annotation.py`) to extract features, train  classifier, and do the annotations.
