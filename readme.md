@@ -25,20 +25,20 @@ All these files can be generated from the preprocessed `.h5ad` files using the c
 
 To run the demo, please execute the following steps in order:
 
-**Step 1: Features Extracting** Load our provided Pancreas DiT weights `DiT/Pancreas/Pancreas.pt` to extract features for both the training and test sets.
+**Features Extracting**: Load our provided Pancreas DiT weights `DiT/Pancreas/Pancreas.pt` to extract features for both the training and test sets.
 
 ```bash
 python extract.py train  
 python extract.py test
 ```
 
-**Step 2: Classifier Training** Use the extracted training features to train the classifier. You can select your own random seed.
+**Classifier Training**: Use the extracted training features to train the classifier. You can select your own random seed.
 
 ```bash
 python classifier\_train.py 0
 ```
 
-**Step 3: Cell Type Annotation** Load the classifier weights obtained in the previous step to annotate the test set features and generate the final results.
+**Cell Type Annotation**: Load the classifier weights obtained in the previous step to annotate the test set features and generate the final results.
 
 ```bash
 python annotation.py 0
@@ -55,7 +55,7 @@ If you want to run scDiTA on your own scRNA-seq datasets, please follow these st
 3. **Train DiT**: Run the following command to train the DiT model from scratch using your preprocessed data.
 
    ```bash
-   python DiT\_train.py
+   python DiT_train.py
    ```
    
-4. **Downstream Tasks**: Once the DiT training is complete, follow the exact same steps detailed in the **Demo** section (`extract.py` \-\> `classifier\_train.py` \-\> `annotation.py`) to extract features, train  classifier, and do the annotations.
+4. **Downstream Tasks**: Once the DiT training is complete, follow the exact same steps detailed in the **Demo** section (`extract.py` \-\> `classifier_train.py` \-\> `annotation.py`) to extract features, train  classifier, and do the annotations.
