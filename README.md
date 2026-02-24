@@ -6,6 +6,8 @@ The scDiTA framework aims to transfer the representational power of generative m
 
 Once trained, we freeze the DiT weights and use the model as a feature extractor. We input clean latent variables, inject a fixed time step parameter t, and set the classifier guidance to null (Null CFG) for inference. Simultaneously, we introduce a DiT-based feature optimization strategy. This identifies and suppresses massive activations induced by AdaLN that concentrate in specific dimensions, stripping away non-semantic signals related to the generation process. The extracted multi-layer features are adaptively fused via a learnable Scalar Mixing strategy. Finally, they pass through a Low-Rank Adaptation (LoRA) module for lightweight fine-tuning and enter a Multi-Layer Perceptron (MLP) classifier for final cell type annotation.
 
+<img width="6118" height="2998" alt="figure1_v5" src="https://github.com/user-attachments/assets/1d453629-fbc0-47dc-98dd-cb73a49f7354" />
+
 ## **2\. Environment Setup**
 
 If you want to reproduce this project, please first configure the required environment. Run the following commands in your terminal:
