@@ -1,0 +1,14 @@
+torch>=2.4.0
+diffusers>=0.29.0
+transformers>=4.40.0
+accelerate>=0.30.0
+numpy>=1.23.5
+pandas>=1.5.0
+scikit-learn>=1.2.0
+tqdm>=4.65.0
+scanpy>=1.9.0
+anndata>=0.8.0
+scikit-learn>=1.2.0
+joblib>=1.2.0
+pandas>=1.5.0
+numpy>=1.23.5
