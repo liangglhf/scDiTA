@@ -37,7 +37,7 @@ python extract.py test
 **Classifier Training**: Use the extracted training features to train the classifier. You can select your own random seed.
 
 ```bash
-python classifier\_train.py 0
+python classifier_train.py 0
 ```
 
 **Cell Type Annotation**: Load the classifier weights obtained in the previous step to annotate the test set features and generate the final results.
