@@ -10,12 +10,14 @@ Extensive benchmarking shows that scDiTA significantly outperforms SOTA methods 
 
 ## **2\. Environment Setup**
 
-We recommend using Conda to set up the environment. Please run the following commands in your terminal:
+Please run the following commands in your terminal:
 
-conda create \-n scDiTA python=3.8.20 \-y  
+```bash
+conda create -n scDiTA python=3.8.20 -y  
 conda activate scDiTA  
-conda install pytorch torchvision torchaudio pytorch-cuda=12.4 \-c pytorch \-c nvidia \-y  
-pip install \-r requirements.txt
+conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia -y  
+pip install -r requirements.txt
+```
 
 ## **3\. Demo (Pancreas Dataset)**
 
